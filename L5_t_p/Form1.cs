@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Text;
 
 namespace L5_t_p
 {
@@ -36,7 +37,7 @@ namespace L5_t_p
 
 
             Brush brush = new SolidBrush(Color.Black);
-            Point pre = new Point(stations[0].x, stations[0].y);
+            int[] pre = { stations[0].x, stations[0].y, stations[0].id };
             //gr.DrawLine(pn, 100, 100, 10, 10);
             foreach (Station station in stations)
 
@@ -45,17 +46,18 @@ namespace L5_t_p
                 {
 
                     pn.Color = station.color;
-                    pre = new Point(station.x, station.y);
+                    pre = [station.x, station.y, station.id];
 
                 }
                 //gr.FillEllipse
 
                 gr.DrawEllipse(pn, station.x * xscale + xscale, (station.y + 5) * yscale + yscale, 10, 10);
-                gr.DrawLine(pn, station.x * xscale + 5 + xscale, (station.y + 5) * yscale + 5 + yscale, pre.X * xscale + 5 + xscale, (pre.Y + 5) * yscale + 5 + yscale);
-                pre = new Point(station.x, station.y);
+                gr.DrawLine(pn, station.x * xscale + 5 + xscale, (station.y + 5) * yscale + 5 + yscale, pre[0] * xscale + 5 + xscale, (pre[1] + 5) * yscale + 5 + yscale);
+                pre = [station.x, station.y, station.id];
 
 
                 gr.DrawString(station.name, font, brush, new PointF(station.x * xscale + xscale + 5, (station.y + 5) * yscale + 5 + yscale));
+                //gr.DrawString(station.id.ToString(), font, brush, new PointF(station.x * xscale + xscale + 5, (station.y + 5) * yscale + 5 + yscale));
 
             }
         }
@@ -63,109 +65,94 @@ namespace L5_t_p
         {
             DrawMap();
         }
+        private Station MakeStationFromString(string line) {
+            string name = "";
+            int pos=0;
+            while (line[pos] != ',') {
+                name += line[pos];
+                pos++;
+            }
+            pos++;
+            string xpos="";
+            while (line[pos] != ',')
+            {
+                xpos += line[pos];
+                pos++;
+            }
+            pos++;
+            string ypos = "";
+            while (line[pos] != ',')
+            {
+                ypos += line[pos];
+                pos++;
+            }
+            pos++;
+            string color = "";
+            while (pos<line.Length)
+            {
+                color += line[pos];
+                pos++;
+            }
+            return new Station(name, int.Parse(xpos), int.Parse(ypos), Color.FromName(color));
+        }
+        private void AddEdgesFromString(string line) {
+            string left = "";
+            int pos = 0;
+            while (line[pos] != ',')
+            {
+                left += line[pos];
+                pos++;
+            }
+            pos++;
+            string right = "";
+            while (line[pos] != ',')
+            {
+                right += line[pos];
+                pos++;
+            }
+            pos++;
+            string weight = "";
+            while (pos < line.Length)
+            {
+                weight += line[pos];
+                pos++;
+            }
+            graph.AddEdge(int.Parse(left), int.Parse(right), int.Parse(weight));
+        }
         private void CreateStations()
         {
-            stations.Add(new Station("Kit Kat", 2, 8, Color.Green));
-            stations.Add(new Station("Safaa Hegaz", 3, 9, Color.Green));
-            stations.Add(new Station("Maspero", 4, 10, Color.Green));
-            stations.Add(new Station("Nasser", 5, 10, Color.Green));
-            stations.Add(new Station("Attaba", 6, 10, Color.Green));
-            stations.Add(new Station("Bab El Shaaria", 7, 10, Color.Green));
-            stations.Add(new Station("El Geish", 8, 10, Color.Green));
-            stations.Add(new Station("Abdou Pasha", 9, 9, Color.Green));
-            stations.Add(new Station("Abbassia", 10, 8, Color.Green));
-            stations.Add(new Station("Fair Zone", 11, 7, Color.Green));
-            stations.Add(new Station("Cairo Stadium", 12, 6, Color.Green));
-            stations.Add(new Station("Koleyet El Banat", 13, 5, Color.Green));
-            stations.Add(new Station("Al Ahram", 14, 4, Color.Green));
-            stations.Add(new Station("Haroun", 15, 3, Color.Green));
-            stations.Add(new Station("Heliopolis Square", 16, 2, Color.Green));
-            stations.Add(new Station("Alf Maskan", 17, 1, Color.Green));
-            stations.Add(new Station("El Shams Club", 18, 0, Color.Green));
-            stations.Add(new Station("El-Nozha", 19, -1, Color.Green));
-            stations.Add(new Station("Hesham Barakat", 20, -2, Color.Green));
-            stations.Add(new Station("Qobaa", 21, -3, Color.Green));
-            stations.Add(new Station("Omar Ibn El-Khattab", 22, -4, Color.Green));
-            stations.Add(new Station("El Haykestep", 23, -5, Color.Green));
-            stations.Add(new Station("Adly Mansour", 24, -5, Color.Green));
-
-            stations.Add(new Station("Shobra El Kheima", 6, 2, Color.Red));
-            stations.Add(new Station("Koliet El-Zeraa", 6, 3, Color.Red));
-            stations.Add(new Station("Mezallat", 6, 4, Color.Red));
-            stations.Add(new Station("Khalafawy", 6, 5, Color.Red));
-            stations.Add(new Station("Sainte Teresa", 6, 6, Color.Red));
-            stations.Add(new Station("Road El-Farag", 6, 7, Color.Red));
-            stations.Add(new Station("Massara", 6, 8, Color.Red));
-            stations.Add(new Station("Al Shohadaa", 6, 9, Color.Red));
-            stations.Add(new Station("Attaba", 6, 10, Color.Red));
-            stations.Add(new Station("Naguib", 6, 11, Color.Red));
-            stations.Add(new Station("Sadat", 5, 11, Color.Red));
-            stations.Add(new Station("Opera", 4, 11, Color.Red));
-            stations.Add(new Station("Dokki", 3, 11, Color.Red));
-            stations.Add(new Station("Bohooth", 2, 11, Color.Red));
-            stations.Add(new Station("Cairo University", 1, 12, Color.Red));
-            stations.Add(new Station("Faisal", 1, 13, Color.Red));
-            stations.Add(new Station("Giza", 1, 14, Color.Red));
-            stations.Add(new Station("Omm el Misryeen", 1, 15, Color.Red));
-            stations.Add(new Station("Sakiat Mekki", 1, 16, Color.Red));
-            stations.Add(new Station("El Mounib", 1, 17, Color.Red));
-
-            stations.Add(new Station("New El-Marg", 15, -5, Color.Blue));
-            stations.Add(new Station("El-Marg", 15, -4, Color.Blue));
-            stations.Add(new Station("Ezbet El-Nakhl", 15, -3, Color.Blue));
-            stations.Add(new Station("Ain Shams", 15, -2, Color.Blue));
-            stations.Add(new Station("El-Matareyya", 15, -1, Color.Blue));
-            stations.Add(new Station("Helmeyet El-Zaitoun", 15, 0, Color.Blue));
-            stations.Add(new Station("Hadayeq El-Zaitoun", 14, 1, Color.Blue));
-            stations.Add(new Station("Saray El-Qobba", 13, 2, Color.Blue));
-            stations.Add(new Station("Hammamat El-Qobba", 12, 3, Color.Blue));
-            stations.Add(new Station("Kobri El-Qobba", 11, 4, Color.Blue));
-            stations.Add(new Station("Manshiet El-Sadr", 10, 5, Color.Blue));
-            stations.Add(new Station("El-Demerdash", 9, 6, Color.Blue));
-            stations.Add(new Station("Ghamra", 8, 7, Color.Blue));
-            stations.Add(new Station("Al Shohadaa", 6, 9, Color.Blue));
-            stations.Add(new Station("Ahmed Orabi", 5, 9, Color.Blue));
-            stations.Add(new Station("Nasser", 5, 10, Color.Blue));
-            stations.Add(new Station("Sadat", 5, 11, Color.Blue));
-            stations.Add(new Station("Saad Zaghloul", 5, 12, Color.Blue));
-            stations.Add(new Station("El-Sayeda Zeinab", 5, 13, Color.Blue));
-            stations.Add(new Station("El-Malek El-Saleh", 5, 14, Color.Blue));
-            stations.Add(new Station("Mar Girgis", 6, 15, Color.Blue));
-            stations.Add(new Station("El-Zahraa'", 7, 16, Color.Blue));
-            stations.Add(new Station("Dar El-Salam", 8, 17, Color.Blue));
-            stations.Add(new Station("Hadayeq El-Maadi", 9, 18, Color.Blue));
-            stations.Add(new Station("Maadi", 10, 19, Color.Blue));
-            stations.Add(new Station("Thakanat El-Maadi", 11, 20, Color.Blue));
-            stations.Add(new Station("Tora El-Balad", 12, 21, Color.Blue));
-            stations.Add(new Station("Kozzika", 12, 22, Color.Blue));
-            stations.Add(new Station("Tora El-Asmant", 12, 23, Color.Blue));
-            stations.Add(new Station("El-Maasara", 12, 24, Color.Blue));
-            stations.Add(new Station("Hadayeq Helwan", 12, 25, Color.Blue));
-            stations.Add(new Station("Wadi Hof", 12, 26, Color.Blue));
-            stations.Add(new Station("Helwan University", 12, 27, Color.Blue));
-            stations.Add(new Station("Ain Helwan", 12, 28, Color.Blue));
-            stations.Add(new Station("Helwan", 12, 29, Color.Blue));
+            string prpath = AppDomain.CurrentDomain.BaseDirectory + "Info/StationsInfo.txt";
+            using (StreamReader sr = new StreamReader(prpath, Encoding.Default))
+            {
+                string line;
+                while ((line = sr.ReadLine()!) != null)
+                {
+                   stations.Add(MakeStationFromString(line));
+                }
+            }
+            
+            listBox1.Items.Add(prpath);
+            
 
 
         }
 
         private void CreateEdges()
         {
-            int vertices = 5;
-            graph = new SearchGraph(vertices);
+            int vertices = 0;
+            string prpath = AppDomain.CurrentDomain.BaseDirectory + "Info/EdgesInfo.txt";
+            graph = new SearchGraph(File.ReadAllLines(prpath).Length);
+            using (StreamReader sr = new StreamReader(prpath, Encoding.Default))
 
-            graph.AddEdge(0, 1, 4);
-            graph.AddEdge(1, 2, 3);
-            //graph.AddEdge(0, 2, 3);
-
-            graph.AddEdge(2, 3, 2);
-            graph.AddEdge(3, 4, 1);
-            graph.AddEdge(4, 5, 2);
-
-            
-
-            //int source = 0, destination = 5;
-            //graph.Dijkstra(source, destination);
+            {
+                
+                string line;
+                while ((line = sr.ReadLine()!) != null)
+                {
+                    AddEdgesFromString(line);
+                    vertices++;
+                }
+            }
 
         }
         private void findwayButton_Click(object sender, EventArgs e)
@@ -173,7 +160,6 @@ namespace L5_t_p
 
             StartStation.Text = startStationId+" "+ endStationId;
             var list = graph.Dijkstra(startStationId, endStationId);
-            //var list = new List<int> { 0, 1, 2 };
             WaylenthLabel.Text = list[0].ToString();
             for (int i=1; i<list.Count;i++) {
                 
@@ -187,7 +173,6 @@ namespace L5_t_p
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
-            //label1.Text += "#";
             double distanse = 20;
             int nearId = -1;
 

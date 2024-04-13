@@ -1,0 +1,78 @@
+﻿Kit Kat,2,8,Green
+Safaa Hegaz,3,9,Green
+Maspero,4,10,Green
+Nasser,5,10,Green
+Attaba,6,10,Green
+Bab El Shaaria,7,10,Green
+El Geish,8,10,Green
+Abdou Pasha,9,9,Green
+Abbassia,10,8,Green
+Fair Zone,11,7,Green
+Cairo Stadium,12,6,Green
+Koleyet El Banat,13,5,Green
+Al Ahram,14,4,Green
+Haroun,15,3,Green
+Heliopolis Square,16,2,Green
+Alf Maskan,17,1,Green
+El Shams Club,18,0,Green
+El-Nozha,19,-1,Green
+Hesham Barakat,20,-2,Green
+Qobaa,21,-3,Green
+Omar Ibn El-Khattab,22,-4,Green
+El Haykestep,23,-5,Green
+Adly Mansour,24,-5,Green
+Shobra El Kheima,6,2,Red
+Koliet El-Zeraa,6,3,Red
+Mezallat,6,4,Red
+Khalafawy,6,5,Red
+Sainte Teresa,6,6,Red
+Road El-Farag,6,7,Red
+Massara,6,8,Red
+Al Shohadaa,6,9,Red
+Attaba,6,10,Red
+Naguib,6,11,Red
+Sadat,5,11,Red
+Opera,4,11,Red
+Dokki,3,11,Red
+Bohooth,2,11,Red
+Cairo University,1,12,Red
+Faisal,1,13,Red
+Giza,1,14,Red
+Omm el Misryeen,1,15,Red
+Sakiat Mekki,1,16,Red
+El Mounib,1,17,Red
+New El-Marg,15,-5,Blue
+El-Marg,15,-4,Blue
+Ezbet El-Nakhl,15,-3,Blue
+Ain Shams,15,-2,Blue
+El-Matareyya,15,-1,Blue
+Helmeyet El-Zaitoun,15,0,Blue
+Hadayeq El-Zaitoun,14,1,Blue
+Saray El-Qobba,13,2,Blue
+Hammamat El-Qobba,12,3,Blue
+Kobri El-Qobba,11,4,Blue
+Manshiet El-Sadr,10,5,Blue
+El-Demerdash,9,6,Blue
+Ghamra,8,7,Blue
+Al Shohadaa,6,9,Blue
+Ahmed Orabi,5,9,Blue
+Nasser,5,10,Blue
+Sadat,5,11,Blue
+Saad Zaghloul,5,12,Blue
+El-Sayeda Zeinab,5,13,Blue
+El-Malek El-Saleh,5,14,Blue
+Mar Girgis,6,15,Blue
+El-Zahraa',7,16,Blue
+Dar El-Salam,8,17,Blue
+Hadayeq El-Maadi,9,18,Blue
+Maadi,10,19,Blue
+Thakanat El-Maadi,11,20,Blue
+Tora El-Balad,12,21,Blue
+Kozzika,12,22,Blue
+Tora El-Asmant,12,23,Blue
+El-Maasara,12,24,Blue
+Hadayeq Helwan,12,25,Blue
+Wadi Hof,12,26,Blue
+Helwan University,12,27,Blue
+Ain Helwan,12,28,Blue
+Helwan,12,29,Blue
