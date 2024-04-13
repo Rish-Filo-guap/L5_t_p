@@ -27,6 +27,6 @@ namespace L5_t_p
         }
     }
     public class Traveltime { 
-        public int  
+        public int a;
     }
 }

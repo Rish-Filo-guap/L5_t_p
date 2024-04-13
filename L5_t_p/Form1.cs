@@ -1,12 +1,17 @@
+using System.Collections;
+
 namespace L5_t_p
 {
     public partial class Form1 : Form
     {
         List<Station> stations = new List<Station>();
+        SearchGraph graph;
         Graphics gr;
-
+        bool stationSelected = false;
         int yscale;
         int xscale;
+        int startStationId;
+        int endStationId;
         public Form1()
         {
 
@@ -16,7 +21,7 @@ namespace L5_t_p
             xscale = Width / 26;
             gr = CreateGraphics();
             CreateStations();
-            
+            CreateEdges();
             //DrawMap();
             //button1_Click(new object(), new EventArgs());
 
@@ -25,7 +30,7 @@ namespace L5_t_p
         {
             Font font = new Font(DefaultFont, FontStyle.Bold);
             gr.Clear(Color.White);
-            yscale = this.Height / 36;
+            yscale = this.Height / 37;
             xscale = this.Width / 26;
             Pen pn = new Pen(Color.Red, 3);// перо: цвет -красный, толщина - 5 пикселей
 
@@ -50,7 +55,7 @@ namespace L5_t_p
                 pre = new Point(station.x, station.y);
 
 
-                gr.DrawString(station.name, font, brush, new PointF(station.x * xscale+ xscale + 5, (station.y + 5) * yscale + 5 + yscale));
+                gr.DrawString(station.name, font, brush, new PointF(station.x * xscale + xscale + 5, (station.y + 5) * yscale + 5 + yscale));
 
             }
         }
@@ -144,6 +149,37 @@ namespace L5_t_p
 
         }
 
+        private void CreateEdges()
+        {
+            int vertices = 5;
+            graph = new SearchGraph(vertices);
+
+            graph.AddEdge(0, 1, 4);
+            graph.AddEdge(1, 2, 3);
+            //graph.AddEdge(0, 2, 3);
+
+            graph.AddEdge(2, 3, 2);
+            graph.AddEdge(3, 4, 1);
+            graph.AddEdge(4, 5, 2);
+
+            
+
+            //int source = 0, destination = 5;
+            //graph.Dijkstra(source, destination);
+
+        }
+        private void findwayButton_Click(object sender, EventArgs e)
+        {
+
+            StartStation.Text = startStationId+" "+ endStationId;
+            var list = graph.Dijkstra(startStationId, endStationId);
+            //var list = new List<int> { 0, 1, 2 };
+            WaylenthLabel.Text = list[0].ToString();
+            for (int i=1; i<list.Count;i++) {
+                
+                listBox2.Items.Add(list[i]);
+            }
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
             DrawMap();
@@ -154,24 +190,48 @@ namespace L5_t_p
             //label1.Text += "#";
             double distanse = 20;
             int nearId = -1;
-            string tn="";
+
             listBox1.Items.Clear();
             listBox1.Items.Add(e.Location.X.ToString());
             listBox1.Items.Add(e.Location.Y.ToString());
-            foreach (Station station in stations) {
-                var newdis = Math.Sqrt(Math.Pow((station.y + 5) * yscale + yscale - e.Location.Y,2) + Math.Pow(station.x * xscale + xscale - e.Location.X,2));
-                if (newdis <= distanse){
+            foreach (Station station in stations)
+            {
+                var newdis = Math.Sqrt(Math.Pow((station.y + 5) * yscale + yscale - e.Location.Y, 2) +
+                                       Math.Pow(station.x * xscale + xscale - e.Location.X, 2));
+                if (newdis <= distanse)
+                {
                     distanse = newdis;
                     nearId = station.id;
-                    tn = station.name;
                 }
             }
-            if (nearId != -1) { 
-            listBox1.Items.Add(stations[nearId].name);
-            listBox1.Items.Add(tn);
+            if (nearId != -1)
+            {
+
+                if (stationSelected)
+                {
+
+                    EndStation.Text = stations[nearId].name + " " + nearId;
+                    stationSelected = false;
+                    endStationId = nearId;
+                }
+                else
+                {
+
+                    EndStation.Text = "";
+                    StartStation.Text = "";
+                    startStationId = 0;
+                    endStationId = 0;
+
+                    StartStation.Text = stations[nearId].name + " " + nearId;
+                    startStationId = nearId;
+                    stationSelected = true;
+
+                }
             }
+
+
+
         }
 
-       
     }
 }
