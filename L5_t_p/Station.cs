@@ -26,4 +26,7 @@ namespace L5_t_p
             this.color = color;
         }
     }
+    public class Traveltime { 
+        public int  
+    }
 }

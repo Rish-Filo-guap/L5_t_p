@@ -4,45 +4,53 @@ namespace L5_t_p
     {
         List<Station> stations = new List<Station>();
         Graphics gr;
+
+        int yscale;
+        int xscale;
         public Form1()
         {
 
             InitializeComponent();
-            this.WindowState = FormWindowState.Maximized;
+            WindowState = FormWindowState.Maximized;
+            yscale = Height / 36;
+            xscale = Width / 26;
             gr = CreateGraphics();
             CreateStations();
-            DrawMap();
-
+            
+            //DrawMap();
+            //button1_Click(new object(), new EventArgs());
 
         }
-        public void DrawMap() {
-            
+        public void DrawMap()
+        {
+            Font font = new Font(DefaultFont, FontStyle.Bold);
             gr.Clear(Color.White);
-            int yscale = this.Height/35;
-            int xscale = this.Width/25;
+            yscale = this.Height / 36;
+            xscale = this.Width / 26;
             Pen pn = new Pen(Color.Red, 3);// перо: цвет -красный, толщина - 5 пикселей
-            
-            
-            Brush a = new SolidBrush(Color.Black);
+
+
+            Brush brush = new SolidBrush(Color.Black);
             Point pre = new Point(stations[0].x, stations[0].y);
             //gr.DrawLine(pn, 100, 100, 10, 10);
             foreach (Station station in stations)
-                
+
             {
-                if (pn.Color != station.color) { 
-                
+                if (pn.Color != station.color)
+                {
+
                     pn.Color = station.color;
                     pre = new Point(station.x, station.y);
-                    
+
                 }
                 //gr.FillEllipse
 
-                gr.DrawEllipse(pn, station.x*xscale, (station.y+5)*yscale, 10, 10);
-                gr.DrawLine(pn, station.x*xscale+5, (station.y+5)*yscale+5, pre.X*xscale+5, (pre.Y+5) * yscale +5);
+                gr.DrawEllipse(pn, station.x * xscale + xscale, (station.y + 5) * yscale + yscale, 10, 10);
+                gr.DrawLine(pn, station.x * xscale + 5 + xscale, (station.y + 5) * yscale + 5 + yscale, pre.X * xscale + 5 + xscale, (pre.Y + 5) * yscale + 5 + yscale);
                 pre = new Point(station.x, station.y);
-                Font font = new Font(DefaultFont, FontStyle.Bold); 
 
-                gr.DrawString(station.name, font, a, new PointF(station.x * xscale+5, (station.y+5) * yscale+5));
+
+                gr.DrawString(station.name, font, brush, new PointF(station.x * xscale+ xscale + 5, (station.y + 5) * yscale + 5 + yscale));
 
             }
         }
@@ -50,30 +58,31 @@ namespace L5_t_p
         {
             DrawMap();
         }
-        private void CreateStations() {
+        private void CreateStations()
+        {
             stations.Add(new Station("Kit Kat", 2, 8, Color.Green));
-            stations.Add(new Station("Safaa Hegaz"	, 3, 9, Color.Green));
-            stations.Add(new Station("Maspero"	, 4, 10, Color.Green));
-            stations.Add(new Station("Nasser"	, 5, 10, Color.Green));
-            stations.Add(new Station("Attaba"	, 6, 10, Color.Green));
+            stations.Add(new Station("Safaa Hegaz", 3, 9, Color.Green));
+            stations.Add(new Station("Maspero", 4, 10, Color.Green));
+            stations.Add(new Station("Nasser", 5, 10, Color.Green));
+            stations.Add(new Station("Attaba", 6, 10, Color.Green));
             stations.Add(new Station("Bab El Shaaria", 7, 10, Color.Green));
-            stations.Add(new Station("El Geish"	, 8, 10, Color.Green));
-            stations.Add(new Station("Abdou Pasha"	, 9, 9, Color.Green));
-            stations.Add(new Station("Abbassia"	, 10, 8, Color.Green));
-            stations.Add(new Station("Fair Zone"	, 11, 7, Color.Green));
-            stations.Add(new Station("Cairo Stadium"	, 12, 6, Color.Green));
-            stations.Add(new Station("Koleyet El Banat"	, 13, 5, Color.Green));
-            stations.Add(new Station("Al Ahram"	, 14, 4, Color.Green));
-            stations.Add(new Station("Haroun"	, 15, 3, Color.Green));
+            stations.Add(new Station("El Geish", 8, 10, Color.Green));
+            stations.Add(new Station("Abdou Pasha", 9, 9, Color.Green));
+            stations.Add(new Station("Abbassia", 10, 8, Color.Green));
+            stations.Add(new Station("Fair Zone", 11, 7, Color.Green));
+            stations.Add(new Station("Cairo Stadium", 12, 6, Color.Green));
+            stations.Add(new Station("Koleyet El Banat", 13, 5, Color.Green));
+            stations.Add(new Station("Al Ahram", 14, 4, Color.Green));
+            stations.Add(new Station("Haroun", 15, 3, Color.Green));
             stations.Add(new Station("Heliopolis Square", 16, 2, Color.Green));
-            stations.Add(new Station("Alf Maskan"	, 17, 1, Color.Green));
-            stations.Add(new Station("El Shams Club"	, 18, 0, Color.Green));
-            stations.Add(new Station("El-Nozha"	, 19, -1, Color.Green));
+            stations.Add(new Station("Alf Maskan", 17, 1, Color.Green));
+            stations.Add(new Station("El Shams Club", 18, 0, Color.Green));
+            stations.Add(new Station("El-Nozha", 19, -1, Color.Green));
             stations.Add(new Station("Hesham Barakat", 20, -2, Color.Green));
-            stations.Add(new Station("Qobaa"	, 21, -3, Color.Green));
+            stations.Add(new Station("Qobaa", 21, -3, Color.Green));
             stations.Add(new Station("Omar Ibn El-Khattab", 22, -4, Color.Green));
-            stations.Add(new Station("El Haykestep"	, 23, -5, Color.Green));
-            stations.Add(new Station("Adly Mansour"	, 24, -5, Color.Green));
+            stations.Add(new Station("El Haykestep", 23, -5, Color.Green));
+            stations.Add(new Station("Adly Mansour", 24, -5, Color.Green));
 
             stations.Add(new Station("Shobra El Kheima", 6, 2, Color.Red));
             stations.Add(new Station("Koliet El-Zeraa", 6, 3, Color.Red));
@@ -87,7 +96,7 @@ namespace L5_t_p
             stations.Add(new Station("Naguib", 6, 11, Color.Red));
             stations.Add(new Station("Sadat", 5, 11, Color.Red));
             stations.Add(new Station("Opera", 4, 11, Color.Red));
-            stations.Add(new Station("Dokki",3, 11, Color.Red));
+            stations.Add(new Station("Dokki", 3, 11, Color.Red));
             stations.Add(new Station("Bohooth", 2, 11, Color.Red));
             stations.Add(new Station("Cairo University", 1, 12, Color.Red));
             stations.Add(new Station("Faisal", 1, 13, Color.Red));
@@ -134,5 +143,35 @@ namespace L5_t_p
 
 
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            DrawMap();
+        }
+
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            //label1.Text += "#";
+            double distanse = 20;
+            int nearId = -1;
+            string tn="";
+            listBox1.Items.Clear();
+            listBox1.Items.Add(e.Location.X.ToString());
+            listBox1.Items.Add(e.Location.Y.ToString());
+            foreach (Station station in stations) {
+                var newdis = Math.Sqrt(Math.Pow((station.y + 5) * yscale + yscale - e.Location.Y,2) + Math.Pow(station.x * xscale + xscale - e.Location.X,2));
+                if (newdis <= distanse){
+                    distanse = newdis;
+                    nearId = station.id;
+                    tn = station.name;
+                }
+            }
+            if (nearId != -1) { 
+            listBox1.Items.Add(stations[nearId].name);
+            listBox1.Items.Add(tn);
+            }
+        }
+
+       
     }
 }
