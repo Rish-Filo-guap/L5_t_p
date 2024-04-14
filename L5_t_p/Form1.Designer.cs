@@ -74,7 +74,7 @@
             // EndStation
             // 
             EndStation.AutoSize = true;
-            EndStation.Location = new Point(324, 18);
+            EndStation.Location = new Point(385, 18);
             EndStation.Margin = new Padding(2, 0, 2, 0);
             EndStation.Name = "EndStation";
             EndStation.Size = new Size(50, 20);
@@ -115,7 +115,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(255, 18);
+            label3.Location = new Point(321, 18);
             label3.Margin = new Padding(2, 0, 2, 0);
             label3.Name = "label3";
             label3.Size = new Size(20, 20);

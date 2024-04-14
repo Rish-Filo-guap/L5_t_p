@@ -10,7 +10,7 @@ namespace L5_t_p
         List<Station> stations = new List<Station>();
         List<string> allWaysWeight = new List<string>();
         SearchGraph graph;
-        Graphics gr;
+        Graphics map;
         bool stationSelected = false;
         int yscale;
         int xscale;
@@ -24,7 +24,7 @@ namespace L5_t_p
             WindowState = FormWindowState.Maximized;
             yscale = Height / 36;
             xscale = Width / 26;
-            gr = CreateGraphics();
+           map= CreateGraphics();
             CreateStations();
             CreateEdges();
             //DrawMap();
@@ -34,7 +34,7 @@ namespace L5_t_p
         public void DrawMap()
         {
             Font font = new Font(DefaultFont, FontStyle.Bold);
-            gr.Clear(Color.White);
+            map.Clear(Color.LightGray);
             yscale = this.Height / 37;
             xscale = this.Width / 26;
             Pen pn = new Pen(Color.Red, 1);// перо: цвет -красный, толщина - 5 пикселей
@@ -53,14 +53,16 @@ namespace L5_t_p
                     pre = [station.x, station.y, station.id];
 
                 }
-                //gr.FillEllipse
-                gr.DrawEllipse(pn, station.x * xscale + xscale/2, (station.y + 5) * yscale + yscale, 10, 10);
-                gr.DrawLine(pn, station.x * xscale + 5 + xscale/2, (station.y + 5) * yscale + 5 + yscale, pre[0] * xscale + 5 + xscale/2, (pre[1] + 5) * yscale + 5 + yscale);
+                //map.FillEllipse
+                pn.Width = 2;
+                map.DrawEllipse(pn, station.x * xscale + xscale/2, (station.y + 5) * yscale + yscale, 10, 10);
+                pn.Width = 1;
+                map.DrawLine(pn, station.x * xscale + 5 + xscale/2, (station.y + 5) * yscale + 5 + yscale, pre[0] * xscale + 5 + xscale/2, (pre[1] + 5) * yscale + 5 + yscale);
                 pre = [station.x, station.y, station.id];
 
 
 
-                gr.DrawString(station.name, font, brush, new PointF(station.x * xscale + xscale/2 + 5, (station.y + 5) * yscale + 5 + yscale));
+                map.DrawString(station.name, font, brush, new PointF(station.x * xscale + xscale/2 + 5, (station.y + 5) * yscale + 5 + yscale));
 
 
             }
@@ -168,18 +170,18 @@ namespace L5_t_p
 
                 DrawMap();
                 listBox2.Items.Clear();
-                Pen pn = new Pen(Color.Brown, 3);
+                Pen pn = new Pen(Color.Gold, 3);
                 var list = graph.Dijkstra(startStationId, endStationId);
 
-                gr.DrawEllipse(pn, stations[list[0][0]].x * xscale + -5 + xscale/2, (stations[list[0][0]].y + 5) * yscale - 5 + yscale, 20, 20);
+                map.DrawEllipse(pn, stations[list[0][0]].x * xscale + -5 + xscale/2, (stations[list[0][0]].y + 5) * yscale - 5 + yscale, 20, 20);
                 listBox2.Items.Add(stations[list[0][0]].name);
 
                 if (list.Count != 0)
                 {
                     for (int i = 0; i < list.Count - 1; i++)
                     {
-                        gr.DrawEllipse(pn, stations[list[i][1]].x * xscale + -5 + xscale/2, (stations[list[i][1]].y + 5) * yscale - 5 + yscale, 20, 20);
-                        gr.DrawLine(pn, stations[list[i][0]].x * xscale + 5 + xscale/2, (stations[list[i][0]].y + 5) * yscale + 5 + yscale, stations[list[i][1]].x * xscale + 5 + xscale/2, (stations[list[i][1]].y + 5) * yscale + 5 + yscale);
+                        pn.Color = stations[list[i][1]].color;
+                        map.DrawEllipse(pn, stations[list[i][1]].x * xscale + -5 + xscale/2, (stations[list[i][1]].y + 5) * yscale - 5 + yscale, 20, 20);
                         listBox2.Items.Add(list[i][2]);
                         listBox2.Items.Add(stations[list[i][1]].name);
                     }
