@@ -10,101 +10,144 @@ namespace L5_t_p
 
     class SearchGraph
     {
-        private int verticesCount;
-        private List<List<(int, int)>> adjacencyList;
+        //private int verticesCount;
+        //public List<List<(int, int)>> adjacencyList;
+        public Dictionary<int, List<(int, int)>> adjacencyList;
 
         public SearchGraph(int vertices)
         {
-            verticesCount = vertices*2;
-            adjacencyList = new List<List<(int, int)>>(vertices*2);
-            for (int i = 0; i < vertices*2; i++)
-            {
-                adjacencyList.Add(new List<(int, int)>());
-            }
+            adjacencyList = new Dictionary<int, List<(int, int)>>();
+            //verticesCount = vertices*2;
+            //adjacencyList = new List<List<(int, int)>>(vertices*2);
+            //for (int i = 0; i < vertices*2; i++)
+            //{
+            //    adjacencyList.Add(new List<(int, int)>());
+            //}
         }
 
         public void AddEdge(int source, int destination, int weight)
         {
+            if (!adjacencyList.ContainsKey(source))
+            {
+                adjacencyList[source] = new List<(int, int)>();
+            }
             adjacencyList[source].Add((destination, weight));
+
+
+            if (!adjacencyList.ContainsKey(destination))
+            {
+                adjacencyList[destination] = new List<(int, int)>();
+            }
             adjacencyList[destination].Add((source, weight));
+
+
         }
 
-        public List<int> Dijkstra(int source, int destination)
+        public List<int[]> Dijkstra(int startVertex, int endVertex)
         {
-            int[] distance = new int[verticesCount];
-            bool[] shortestPathTreeSet = new bool[verticesCount];
-            int[] parent = new int[verticesCount];
+            Dictionary<int, int> distances = new Dictionary<int, int>();
+            Dictionary<int, int> previousVertices = new Dictionary<int, int>();
+            HashSet<int> visited = new HashSet<int>();
 
-            for (int i = 0; i < verticesCount; ++i)
+            PriorityQueue<(int, int)> priorityQueue = new PriorityQueue<(int, int)>();
+            priorityQueue.Enqueue((0, startVertex));
+            distances[startVertex] = 0;
+            List<int[]> res = new List<int[]>();
+
+            while (priorityQueue.Count > 0)
             {
-                distance[i] = int.MaxValue;
-                shortestPathTreeSet[i] = false;
-            }
+                (int dist, int currentVertex) = priorityQueue.Dequeue();
 
-            distance[source] = 0;
-            parent[source] = -1;
-
-            for (int count = 0; count < verticesCount - 1; ++count)
-            {
-                int u = MinimumDistance(distance, shortestPathTreeSet);
-                shortestPathTreeSet[u] = true;
-
-                foreach (var vertex in adjacencyList[u])
+                if (visited.Contains(currentVertex))
                 {
-                    int v = vertex.Item1;
-                    int weight = vertex.Item2;
+                    continue;
+                }
 
-                    if (!shortestPathTreeSet[v] && distance[u] != int.MaxValue && distance[u] + weight < distance[v])
+                visited.Add(currentVertex);
+
+                if (currentVertex == endVertex)
+                {
+                    List<int> path = GetShortestPath(previousVertices, startVertex, endVertex);
+                    //Console.WriteLine($"Shortest distance from vertex {startVertex} to vertex {endVertex}: {dist}");
+                    //Console.WriteLine("Path:");
+                    int previous = -1;
+                    int fullweight = 0;
+                    foreach (int vertex in path)
                     {
-                        parent[v] = u;
-                        distance[v] = distance[u] + weight;
+                        if (previous != -1)
+                        {
+                            int weight = adjacencyList[previous].Find(x => x.Item1 == vertex).Item2;
+                            res.Add([ previous, vertex, weight]);
+                            fullweight += weight;
+                        }
+                        previous = vertex;
+                    }
+                    res.Add([fullweight]);
+                    return res;
+                }
+
+                if (adjacencyList.ContainsKey(currentVertex))
+                {
+                    foreach ((int neighbor, int weight) in adjacencyList[currentVertex])
+                    {
+                        int newDistance = dist + weight;
+                        if (!distances.ContainsKey(neighbor) || newDistance < distances[neighbor])
+                        {
+                            distances[neighbor] = newDistance;
+                            previousVertices[neighbor] = currentVertex;
+                            priorityQueue.Enqueue((newDistance, neighbor));
+                        }
                     }
                 }
             }
 
-           return PrintShortestPath(source, destination, distance, parent);
+            return res;
         }
 
-        private int MinimumDistance(int[] distance, bool[] shortestPathTreeSet)
+        private List<int> GetShortestPath(Dictionary<int, int> previousVertices, int startVertex, int endVertex)
         {
-            int min = int.MaxValue, minIndex = -1;
-
-            for (int v = 0; v < verticesCount; ++v)
+            List<int> path = new List<int>();
+            int currentVertex = endVertex;
+            while (currentVertex != startVertex)
             {
-                if (shortestPathTreeSet[v] == false && distance[v] <= min)
-                {
-                    min = distance[v];
-                    minIndex = v;
-                }
+                path.Add(currentVertex);
+                currentVertex = previousVertices[currentVertex];
             }
-
-            return minIndex;
-        }
-
-        private List<int> PrintShortestPath(int source, int destination, int[] distance, int[] parent)
-        {
-            var list = new List<int>
-            {
-                distance[destination]
-            };
-
-            //Console.Write($"Shortest Path from {source} to {destination}: ");
-            list.AddRange(PrintPath(destination, parent));
-            return list;
-            //Console.WriteLine($" (Distance: {distance[destination]})");
-        }
-
-        private List<int> PrintPath(int currentVertex, int[] parent)
-        {
-            if (currentVertex == -1)
-                return new List<int>();
-            var list = new List<int>();
-            list.AddRange(PrintPath(parent[currentVertex], parent));
-            list.Add(currentVertex);
-            return list;
-            //Console.Write(currentVertex + " ");
+            path.Add(startVertex);
+            path.Reverse();
+            return path;
         }
     }
 
-    
+    class PriorityQueue<T>
+    {
+        private SortedDictionary<T, int> elements = new SortedDictionary<T, int>();
+
+        public int Count => elements.Count;
+
+        public void Enqueue(T element)
+        {
+            if (!elements.ContainsKey(element))
+            {
+                elements[element] = 0;
+            }
+            elements[element]++;
+        }
+
+        public T Dequeue()
+        {
+            var first = elements.First();
+            var element = first.Key;
+            if (first.Value > 1)
+            {
+                elements[first.Key]--;
+            }
+            else
+            {
+                elements.Remove(first.Key);
+            }
+            return element;
+        }
+
+    }
 }
