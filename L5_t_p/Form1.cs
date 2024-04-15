@@ -173,7 +173,7 @@ namespace L5_t_p
                 Pen pn = new Pen(Color.Gold, 3);
                 var list = graph.Dijkstra(startStationId, endStationId);
 
-                map.DrawEllipse(pn, stations[list[0][0]].x * xscale + -5 + xscale/2, (stations[list[0][0]].y + 5) * yscale - 5 + yscale, 20, 20);
+                map.DrawEllipse(pn, stations[list[0][0]].x * xscale + -10 + xscale/2, (stations[list[0][0]].y + 5) * yscale - 10 + yscale, 30, 30);
                 listBox2.Items.Add(stations[list[0][0]].name);
 
                 if (list.Count != 0)
@@ -181,7 +181,7 @@ namespace L5_t_p
                     for (int i = 0; i < list.Count - 1; i++)
                     {
                         pn.Color = stations[list[i][1]].color;
-                        map.DrawEllipse(pn, stations[list[i][1]].x * xscale + -5 + xscale/2, (stations[list[i][1]].y + 5) * yscale - 5 + yscale, 20, 20);
+                        map.DrawEllipse(pn, stations[list[i][1]].x * xscale + -10 + xscale/2, (stations[list[i][1]].y + 5) * yscale - 10 + yscale, 30, 30);
                         listBox2.Items.Add(list[i][2]);
                         listBox2.Items.Add(stations[list[i][1]].name);
                     }
@@ -204,7 +204,7 @@ namespace L5_t_p
             }
             double distanse = 20;
             int nearId = -1;
-
+            Pen pn = new Pen(Color.Purple, 3);
 
             foreach (Station station in stations)
             {
@@ -214,6 +214,7 @@ namespace L5_t_p
                 {
                     distanse = newdis;
                     nearId = station.id;
+
                 }
             }
             if (nearId != -1)
@@ -225,6 +226,7 @@ namespace L5_t_p
                     EndStation.Text = stations[nearId].name;
                     stationSelected = false;
                     endStationId = nearId;
+                    map.DrawEllipse(pn, stations[nearId].x * xscale + -10 + xscale / 2, (stations[nearId].y + 5) * yscale - 10 + yscale, 30, 30);
                 }
                 else
                 {
@@ -233,6 +235,8 @@ namespace L5_t_p
                     StartStation.Text = "";
                     startStationId = -1;
                     endStationId = -1;
+                    DrawMap();
+                    map.DrawEllipse(pn, stations[nearId].x * xscale + -10 + xscale / 2, (stations[nearId].y + 5) * yscale - 10 + yscale, 30, 30);
 
                     StartStation.Text = stations[nearId].name;
                     startStationId = nearId;
