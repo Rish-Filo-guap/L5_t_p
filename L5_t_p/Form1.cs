@@ -7,46 +7,41 @@ namespace L5_t_p
 {
     public partial class Form1 : Form
     {
-        List<Station> stations = new List<Station>();
-        List<string> allWaysWeight = new List<string>();
-        SearchGraph graph;
-        Graphics map;
-        bool stationSelected = false;
+        List<Station> stations = new List<Station>(); //массив станций
+        List<string> allWaysWeight = new List<string>(); //массив всех весов между станциями
+        SearchGraph graph; //объект класса поиск по графу
+        Graphics map; //карта метро
+        bool stationSelected = false; //выбрана ли станция
         int yscale;
         int xscale;
-        int startStationId;
-        int endStationId;
-        bool isWayDrawed = false;
+        int startStationId; //страртовая станция
+        int endStationId;//конечная станция
+        bool isWayDrawed = false; //нарисован ли путь между станциями
         public Form1()
         {
 
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            yscale = Height / 36;
-            xscale = Width / 26;
-           map= CreateGraphics();
-            CreateStations();
-            CreateEdges();
-            //DrawMap();
-            //button1_Click(new object(), new EventArgs());
+            WindowState = FormWindowState.Maximized;//развернуть на полный экран
+            yscale = Height / 36;//расчитать коэффициент увеличения по оси у
+            xscale = Width / 24;//расчитать коэффициент увеличения по оси х
+            map = CreateGraphics();
+            CreateStations();//считать станции из файла
+            CreateEdges();//считать пути между станциями из файла
 
         }
-        public void DrawMap()
+        public void DrawMap()//нарисовать карту
         {
-            Font font = new Font(DefaultFont, FontStyle.Bold);
-            map.Clear(Color.LightGray);
-            yscale = this.Height / 37;
-            xscale = this.Width / 26;
-            Pen pn = new Pen(Color.Red, 1);// перо: цвет -красный, толщина - 5 пикселей
+            Font font = new Font(DefaultFont, FontStyle.Bold); //шрифт для названия станций
+            map.Clear(Color.LightGray);//фоновый цвет
+            Pen pn = new Pen(Color.Red, 1);//установка типа линии ветки
+            Brush brush = new SolidBrush(Color.Black);//устнаовка цвета текста
 
+            int[] pre = { stations[0].x, stations[0].y };//первая точка для построения линии
 
-            Brush brush = new SolidBrush(Color.Black);
-            int[] pre = { stations[0].x, stations[0].y };
-
-            foreach (Station station in stations)
+            foreach (Station station in stations) //цикл отрисовки карты метро
 
             {
-                if (pn.Color != station.color)
+                if (pn.Color != station.color)//изменение цвета при смене ветки
                 {
 
                     pn.Color = station.color;
@@ -55,15 +50,15 @@ namespace L5_t_p
                 }
                 //map.FillEllipse
                 pn.Width = 2;
-                map.DrawEllipse(pn, station.x * xscale + xscale/2, (station.y + 5) * yscale + yscale, 10, 10);
+                map.DrawEllipse(pn, GetXFromCoord(station.x)+5, GetYFromCoord(station.y)+5, 10, 10);//круг в точке станции
                 pn.Width = 1;
-                map.DrawLine(pn, station.x * xscale + 5 + xscale/2, (station.y + 5) * yscale + 5 + yscale, pre[0] * xscale + 5 + xscale/2, (pre[1] + 5) * yscale + 5 + yscale);
+                map.DrawLine(pn, GetXFromCoord(station.x)+10, GetYFromCoord(station.y)+10, GetXFromCoord(pre[0])+10, GetYFromCoord(pre[1])+10);
                 pre = [station.x, station.y, station.id];
 
-
-
-                map.DrawString(station.name, font, brush, new PointF(station.x * xscale + xscale/2 + 5, (station.y + 5) * yscale + 5 + yscale));
-
+                
+                map.RotateTransform(10);
+                map.DrawString(station.name, font, brush, new PointF(GetXFromCoord(station.x)+5, GetYFromCoord(station.y)));
+                map.ResetTransform();
 
             }
 
@@ -163,6 +158,12 @@ namespace L5_t_p
             }
 
         }
+        private int GetXFromCoord(int x) {
+            return x * xscale + -10;
+        }
+        private int GetYFromCoord(int y) {
+            return (y + 5) * yscale - 10 + yscale;
+        }
         private void findwayButton_Click(object sender, EventArgs e)
         {
             if (startStationId != -1 && endStationId != -1 && endStationId != startStationId)
@@ -173,7 +174,7 @@ namespace L5_t_p
                 Pen pn = new Pen(Color.Gold, 3);
                 var list = graph.Dijkstra(startStationId, endStationId);
 
-                map.DrawEllipse(pn, stations[list[0][0]].x * xscale + -10 + xscale/2, (stations[list[0][0]].y + 5) * yscale - 10 + yscale, 30, 30);
+                map.DrawEllipse(pn, GetXFromCoord(stations[list[0][0]].x), GetYFromCoord(stations[list[0][0]].y), 30, 30);
                 listBox2.Items.Add(stations[list[0][0]].name);
 
                 if (list.Count != 0)
@@ -181,7 +182,7 @@ namespace L5_t_p
                     for (int i = 0; i < list.Count - 1; i++)
                     {
                         pn.Color = stations[list[i][1]].color;
-                        map.DrawEllipse(pn, stations[list[i][1]].x * xscale + -10 + xscale/2, (stations[list[i][1]].y + 5) * yscale - 10 + yscale, 30, 30);
+                        map.DrawEllipse(pn, GetXFromCoord(stations[list[i][1]].x), GetYFromCoord(stations[list[i][1]].y), 30, 30);
                         listBox2.Items.Add(list[i][2]);
                         listBox2.Items.Add(stations[list[i][1]].name);
                     }
@@ -226,7 +227,7 @@ namespace L5_t_p
                     EndStation.Text = stations[nearId].name;
                     stationSelected = false;
                     endStationId = nearId;
-                    map.DrawEllipse(pn, stations[nearId].x * xscale + -10 + xscale / 2, (stations[nearId].y + 5) * yscale - 10 + yscale, 30, 30);
+                    map.DrawEllipse(pn, GetXFromCoord(stations[nearId].x), GetYFromCoord(stations[nearId].y), 30, 30);
                 }
                 else
                 {
@@ -236,7 +237,7 @@ namespace L5_t_p
                     startStationId = -1;
                     endStationId = -1;
                     DrawMap();
-                    map.DrawEllipse(pn, stations[nearId].x * xscale + -10 + xscale / 2, (stations[nearId].y + 5) * yscale - 10 + yscale, 30, 30);
+                    map.DrawEllipse(pn, GetXFromCoord(stations[nearId].x), GetYFromCoord(stations[nearId].y), 30, 30);
 
                     StartStation.Text = stations[nearId].name;
                     startStationId = nearId;
@@ -255,7 +256,6 @@ namespace L5_t_p
             Form2 allweight = new Form2();
             foreach (var way in allWaysWeight) { 
                 allweight.listBox1.Items.Add(way);
-                //allweight.listBox1.Items.Add(way.Key.ToString() + " -> "+ way.Value[0].Item1.ToString()+" ("+ way.Value[0].Item2+")");
             }
             
             allweight.listBox1.Sorted = true;
