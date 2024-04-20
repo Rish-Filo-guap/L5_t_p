@@ -196,13 +196,13 @@ namespace L5_t_p
         private void FindWay() {//поиск и отрисовка пути
             if (startStationId != -1 && endStationId != -1 && endStationId != startStationId)
             {
-
+                Point pre;
                 Pen pn;
                 listBox2.Items.Clear();
                     pn = new Pen(Color.Gold, 3);
                 
                 var list = graph.Dijkstra(startStationId, endStationId);//расчитать список станций на пути
-
+                pre = new Point(GetXFromCoord(stations[list[0][0]].x) - 15, GetYFromCoord(stations[list[0][0]].y));
                 map.DrawEllipse(pn, GetXFromCoord(stations[list[0][0]].x) - 15, GetYFromCoord(stations[list[0][0]].y) - 15, 30, 30);//начало пути
                 listBox2.Items.Add(stations[list[0][0]].name);//написать название станции
 
@@ -212,9 +212,13 @@ namespace L5_t_p
                     {
                         pn.Color = stations[list[i][1]].color;
                         Thread.Sleep(150);
-                        map.DrawEllipse(pn, GetXFromCoord(stations[list[i][1]].x) - 15, GetYFromCoord(stations[list[i][1]].y) - 15, 30, 30);//выделить станцию на пути
+                        if (new Point(GetXFromCoord(stations[list[i][1]].x) - 15, GetYFromCoord(stations[list[i][1]].y))==pre)
+                            map.DrawEllipse(pn, GetXFromCoord(stations[list[i][1]].x) - 18, GetYFromCoord(stations[list[i][1]].y) - 18, 36, 36);//выделить станцию на пути
+                        else 
+                            map.DrawEllipse(pn, GetXFromCoord(stations[list[i][1]].x) - 15, GetYFromCoord(stations[list[i][1]].y) - 15, 30, 30);//выделить станцию на пути
                         listBox2.Items.Add(list[i][2]);//вывести дистанцию между станциями
                         listBox2.Items.Add(stations[list[i][1]].name);//вывести имя станции
+                        pre = new Point(GetXFromCoord(stations[list[i][1]].x) - 15, GetYFromCoord(stations[list[i][1]].y));
                     }
                 }
                 WaylenthLabel.Text = (list[list.Count - 1][0]).ToString();//вывести длину всего пути
