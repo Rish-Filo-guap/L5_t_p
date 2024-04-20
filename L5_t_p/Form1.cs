@@ -13,9 +13,12 @@ namespace L5_t_p
         List<string> allWaysWeight = new List<string>(); //массив всех весов между станциями
         SearchGraph graph; //объект класса поиск по графу
         Graphics map; //карта метро
-        bool stationSelected = false; //выбрана ли станция
-        int yscale;
-        int xscale;
+        BufferedGraphics buffered; //буфер для карты
+        BufferedGraphicsContext currentContext;
+
+        bool stationSelected = false; //какая станция выбрана
+        int yscale;//масштабирование по у
+        int xscale;//масштабирование по х
         int startStationId; //страртовая станция
         int endStationId;//конечная станция
         bool isWayDrawed = false; //нарисован ли путь между станциями
@@ -27,16 +30,23 @@ namespace L5_t_p
             yscale = Height / 36;//расчитать коэффициент увеличения по оси у
             xscale = Width / 24;//расчитать коэффициент увеличения по оси х
             map = CreateGraphics();
+            currentContext = BufferedGraphicsManager.Current;
+            buffered =currentContext.Allocate(this.CreateGraphics(), this.DisplayRectangle);
             //DoubleBuffered = true;
-            
+
             CreateStations();//считать станции из файла
             CreateEdges();//считать пути между станциями из файла
 
         }
+        
         public void DrawMap()//нарисовать карту
         {
             Font font = new Font(DefaultFont, FontStyle.Bold); //шрифт для названия станций
-            map.Clear(Color.LightGray);//фоновый цвет
+            
+            
+
+
+            buffered.Graphics.Clear(Color.LightGray);//фоновый цвет
 
             Pen pn = new Pen(Color.Red, 1);//установка типа линии ветки
             Brush brush = new SolidBrush(Color.Black);//устнаовка цвета текста
@@ -53,11 +63,10 @@ namespace L5_t_p
                     pre = [station.x, station.y, station.id];
 
                 }
-                //map.FillEllipse
                 pn.Width = 2;
-                map.DrawEllipse(pn, GetXFromCoord(station.x)-5, GetYFromCoord(station.y)-5, 10, 10);//круг в точке станции
+                buffered.Graphics.DrawEllipse(pn, GetXFromCoord(station.x)-5, GetYFromCoord(station.y)-5, 10, 10);//круг в точке станции
                 pn.Width = 1;
-                map.DrawLine(pn, GetXFromCoord(station.x), GetYFromCoord(station.y), GetXFromCoord(pre[0]), GetYFromCoord(pre[1]));//линия между станциями
+                buffered.Graphics.DrawLine(pn, GetXFromCoord(station.x), GetYFromCoord(station.y), GetXFromCoord(pre[0]), GetYFromCoord(pre[1]));//линия между станциями
                 pre = [station.x, station.y, station.id];
 
 
@@ -68,16 +77,17 @@ namespace L5_t_p
                 using (Matrix m = new Matrix())//поворот надписи
                 {
                     m.RotateAt(7, new PointF(GetXFromCoord(station.x)+5, GetYFromCoord(station.y)-10));
-                    map.Transform = m;
-                    
-                        map.DrawString(station.name, font, brush, new PointF(GetXFromCoord(station.x)+5, GetYFromCoord(station.y)-10));//назавнание станции
-                    map.ResetTransform();
+                    buffered.Graphics.Transform = m;
+
+                    buffered.Graphics.DrawString(station.name, font, brush, new PointF(GetXFromCoord(station.x)+5, GetYFromCoord(station.y)-10));//назавнание станции
+                    buffered.Graphics.ResetTransform();
                 }
 
                 
 
             }
-
+            buffered.Render();//генерация в буфере
+            buffered.Render(map);//вывод на экран
         }
 
         private Station MakeStationFromString(string line)//чтение станции из файла
@@ -135,8 +145,11 @@ namespace L5_t_p
                 weight += line[pos];
                 pos++;
             }
+            //создание списка всех путей
             allWaysWeight.Add(stations[int.Parse(left)].name + " -> " + stations[int.Parse(right)].name + " (" + int.Parse(weight) + ")");
             allWaysWeight.Add(stations[int.Parse(right)].name + " -> " + stations[int.Parse(left)].name + " (" + int.Parse(weight) + ")");
+
+            //добавление ребра в граф
             graph.AddEdge(int.Parse(left), int.Parse(right), int.Parse(weight));
         }
         private void CreateStations()//создание массива станций
@@ -180,77 +193,58 @@ namespace L5_t_p
         private int GetYFromCoord(int y) {//расчет у координаты для рисовани фигур
             return (y + 5) * yscale - 5 + yscale;
         }
-        private void FindWay(bool clear) {
+        private void FindWay() {//поиск и отрисовка пути
             if (startStationId != -1 && endStationId != -1 && endStationId != startStationId)
             {
 
-                //DrawMap();
                 Pen pn;
                 listBox2.Items.Clear();
-                if (clear)
-                {
-
-                    pn = new Pen(Color.LightGray, 3);
-                }
-                else { 
                     pn = new Pen(Color.Gold, 3);
                 
-                }
-                var list = graph.Dijkstra(startStationId, endStationId);
+                var list = graph.Dijkstra(startStationId, endStationId);//расчитать список станций на пути
 
-                map.DrawEllipse(pn, GetXFromCoord(stations[list[0][0]].x) - 15, GetYFromCoord(stations[list[0][0]].y) - 15, 30, 30);
-                listBox2.Items.Add(stations[list[0][0]].name);
+                map.DrawEllipse(pn, GetXFromCoord(stations[list[0][0]].x) - 15, GetYFromCoord(stations[list[0][0]].y) - 15, 30, 30);//начало пути
+                listBox2.Items.Add(stations[list[0][0]].name);//написать название станции
 
                 if (list.Count != 0)
                 {
                     for (int i = 0; i < list.Count - 1; i++)
                     {
-                        if (clear)
-                        {
-
-                            pn = new Pen(Color.LightGray, 3);
-                        }
-                        else
-                        {
-                            //pn = new Pen(Color.Gold, 3);
-                            pn.Color = stations[list[i][1]].color;
-
-                        }
-                        map.DrawEllipse(pn, GetXFromCoord(stations[list[i][1]].x) - 15, GetYFromCoord(stations[list[i][1]].y) - 15, 30, 30);
-                        listBox2.Items.Add(list[i][2]);
-                        listBox2.Items.Add(stations[list[i][1]].name);
+                        pn.Color = stations[list[i][1]].color;
+                        Thread.Sleep(150);
+                        map.DrawEllipse(pn, GetXFromCoord(stations[list[i][1]].x) - 15, GetYFromCoord(stations[list[i][1]].y) - 15, 30, 30);//выделить станцию на пути
+                        listBox2.Items.Add(list[i][2]);//вывести дистанцию между станциями
+                        listBox2.Items.Add(stations[list[i][1]].name);//вывести имя станции
                     }
                 }
-                WaylenthLabel.Text = (list[list.Count - 1][0]).ToString();
+                WaylenthLabel.Text = (list[list.Count - 1][0]).ToString();//вывести длину всего пути
                 isWayDrawed = true;
             }
+           
         }
-        private void findwayButton_Click(object sender, EventArgs e)
-        {
-            FindWay(false);
-        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            DrawMap();
+            DrawMap();//нарисвовать карту при загрузке формы
         }
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
             if (isWayDrawed)
             {
-                    FindWay(true);
-                //DrawMap();
                 isWayDrawed = false;
             }
-            double distanse = 20;
-            int nearId = -1;
+            double distanse = 20;//максимальное расстояние от точки клика до станции
+            int nearId = -1;//выбранная станция
             Pen pn = new Pen(Color.Purple, 3);
 
             foreach (Station station in stations)
             {
+                //рассточние между станцией и точкой клика
                 var newdis = Math.Sqrt(Math.Pow(GetYFromCoord(station.y) - e.Location.Y, 2) +
                                        Math.Pow(GetXFromCoord(station.x) - e.Location.X, 2));
-                if (newdis <= distanse)
+                
+                if (newdis <= distanse)//нахождение близжайшей станции
                 {
                     distanse = newdis;
                     nearId = station.id;
@@ -259,52 +253,48 @@ namespace L5_t_p
             }
             if (nearId != -1)
             {
-
-                if (stationSelected)
+                
+                if (stationSelected)//выбрана станция конца
                 {
-
                     EndStation.Text = stations[nearId].name;
-                    stationSelected = false;
+                    //stationSelected = false;
                     endStationId = nearId;
                     map.DrawEllipse(pn, GetXFromCoord(stations[nearId].x)-15, GetYFromCoord(stations[nearId].y)-15, 30, 30);
-                    Thread.Sleep(50);
-                    FindWay(false);
+                    
+                    FindWay();//нарисовать маршрут
                 }
-                else
+                else//выбрана станция начала
                 {
 
-                    EndStation.Text = "";
-                    StartStation.Text = "";
-                    pn.Color = Color.LightGray;
-                    map.DrawEllipse(pn, GetXFromCoord(stations[startStationId].x) - 15, GetYFromCoord(stations[startStationId].y) - 15, 30, 30);
-                    map.DrawEllipse(pn, GetXFromCoord(stations[endStationId].x) - 15, GetYFromCoord(stations[endStationId].y) - 15, 30, 30);
-                    startStationId = -1;
-                    endStationId = -1;
-                    //DrawMap();
+                    EndStation.Text = "";//сбросить имя конечной станции
+                    StartStation.Text = "";//сбросить имя начальной станции
+
+                    startStationId = -1;//сбросить индекс начальной станции
+                    endStationId = -1;//сбросить индекс конечной станции
+                    DrawMap();//убрать отрисованный маршрут
                     pn.Color = Color.Purple;
-                    map.DrawEllipse(pn, GetXFromCoord(stations[nearId].x)-15, GetYFromCoord(stations[nearId].y)-15, 30, 30);
+                    map.DrawEllipse(pn, GetXFromCoord(stations[nearId].x)-15, GetYFromCoord(stations[nearId].y)-15, 30, 30);//выделить начальную станцию
 
-                    StartStation.Text = stations[nearId].name;
-                    startStationId = nearId;
-                    stationSelected = true;
-
+                    StartStation.Text = stations[nearId].name;//вывести имя начальной станции
+                    startStationId = nearId; //записать индекс начальной станции
                 }
+                stationSelected = !stationSelected;//изменить флаг начальной или конечной станции
             }
 
 
 
         }
 
-        private void ShowAllWeight_Button_Click(object sender, EventArgs e)
+        private void ShowAllWeight_Button_Click(object sender, EventArgs e)//вывести список всех путей между станциями
         {
 
             Form2 allweight = new Form2();
             foreach (var way in allWaysWeight) { 
-                allweight.listBox1.Items.Add(way);
+                allweight.listBox1.Items.Add(way);//добавить список всех путей
             }
             
-            allweight.listBox1.Sorted = true;
-            allweight.ShowDialog();
+            allweight.listBox1.Sorted = true;//отсортировать список
+            allweight.ShowDialog();//вывести диалог с формой
         }
     }
 }

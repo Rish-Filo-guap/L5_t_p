@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             label1 = new Label();
-            findwayButton = new Button();
             StartStation = new Label();
             EndStation = new Label();
             listBox2 = new ListBox();
@@ -49,17 +48,6 @@
             label1.Size = new Size(73, 20);
             label1.TabIndex = 2;
             label1.Text = "Маршрут";
-            // 
-            // findwayButton
-            // 
-            findwayButton.Location = new Point(143, 63);
-            findwayButton.Margin = new Padding(2);
-            findwayButton.Name = "findwayButton";
-            findwayButton.Size = new Size(102, 46);
-            findwayButton.TabIndex = 3;
-            findwayButton.Text = "Построить";
-            findwayButton.UseVisualStyleBackColor = true;
-            findwayButton.Click += findwayButton_Click;
             // 
             // StartStation
             // 
@@ -156,7 +144,6 @@
             Controls.Add(listBox2);
             Controls.Add(EndStation);
             Controls.Add(StartStation);
-            Controls.Add(findwayButton);
             Controls.Add(label1);
             Name = "Form1";
             Text = "Form1";
@@ -168,7 +155,6 @@
 
         #endregion
         private Label label1;
-        private Button findwayButton;
         private Label StartStation;
         private Label EndStation;
         private ListBox listBox2;
