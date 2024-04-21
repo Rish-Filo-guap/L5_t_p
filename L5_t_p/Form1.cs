@@ -173,7 +173,7 @@ namespace L5_t_p
         {
             int vertices = 0;
             string prpath = AppDomain.CurrentDomain.BaseDirectory + "Info/EdgesInfo.txt";
-            graph = new SearchGraph(File.ReadAllLines(prpath).Length);
+            graph = new SearchGraph();
             using (StreamReader sr = new StreamReader(prpath, Encoding.Default))
 
             {
@@ -199,9 +199,9 @@ namespace L5_t_p
                 Point pre;
                 Pen pn;
                 listBox2.Items.Clear();
-                    pn = new Pen(Color.Gold, 3);
-                
                 var list = graph.Dijkstra(startStationId, endStationId);//расчитать список станций на пути
+                pn = new Pen(stations[list[0][0]].color, 3);
+                
                 pre = new Point(GetXFromCoord(stations[list[0][0]].x) - 15, GetYFromCoord(stations[list[0][0]].y));
                 map.DrawEllipse(pn, GetXFromCoord(stations[list[0][0]].x) - 15, GetYFromCoord(stations[list[0][0]].y) - 15, 30, 30);//начало пути
                 listBox2.Items.Add(stations[list[0][0]].name);//написать название станции
@@ -213,9 +213,9 @@ namespace L5_t_p
                         pn.Color = stations[list[i][1]].color;
                         Thread.Sleep(150);
                         if (new Point(GetXFromCoord(stations[list[i][1]].x) - 15, GetYFromCoord(stations[list[i][1]].y))==pre)
-                            map.DrawEllipse(pn, GetXFromCoord(stations[list[i][1]].x) - 18, GetYFromCoord(stations[list[i][1]].y) - 18, 36, 36);//выделить станцию на пути
+                            map.DrawEllipse(pn, GetXFromCoord(stations[list[i][1]].x) - 18, GetYFromCoord(stations[list[i][1]].y) - 18, 36, 36);//выделить станцию на пути при переходе
                         else 
-                            map.DrawEllipse(pn, GetXFromCoord(stations[list[i][1]].x) - 15, GetYFromCoord(stations[list[i][1]].y) - 15, 30, 30);//выделить станцию на пути
+                            map.DrawEllipse(pn, GetXFromCoord(stations[list[i][1]].x) - 15, GetYFromCoord(stations[list[i][1]].y) - 15, 30, 30);//выделить станцию на пути при переезде
                         listBox2.Items.Add(list[i][2]);//вывести дистанцию между станциями
                         listBox2.Items.Add(stations[list[i][1]].name);//вывести имя станции
                         pre = new Point(GetXFromCoord(stations[list[i][1]].x) - 15, GetYFromCoord(stations[list[i][1]].y));

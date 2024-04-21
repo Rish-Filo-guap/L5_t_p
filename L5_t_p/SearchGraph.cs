@@ -10,22 +10,14 @@ namespace L5_t_p
 
     class SearchGraph
     {
-        //private int verticesCount;
-        //public List<List<(int, int)>> adjacencyList;
-        public Dictionary<int, List<(int, int)>> adjacencyList;
+        public Dictionary<int, List<(int, int)>> adjacencyList;//словарь графа
 
-        public SearchGraph(int vertices)
+        public SearchGraph()
         {
             adjacencyList = new Dictionary<int, List<(int, int)>>();
-            //verticesCount = vertices*2;
-            //adjacencyList = new List<List<(int, int)>>(vertices*2);
-            //for (int i = 0; i < vertices*2; i++)
-            //{
-            //    adjacencyList.Add(new List<(int, int)>());
-            //}
         }
 
-        public void AddEdge(int source, int destination, int weight)
+        public void AddEdge(int source, int destination, int weight)//добавить ребро
         {
             if (!adjacencyList.ContainsKey(source))
             {
@@ -46,7 +38,7 @@ namespace L5_t_p
         public List<int[]> Dijkstra(int startVertex, int endVertex)
         {
             Dictionary<int, int> distances = new Dictionary<int, int>();
-            Dictionary<int, int> previousVertices = new Dictionary<int, int>();
+            Dictionary<int, int> preVertices = new Dictionary<int, int>();
             HashSet<int> visited = new HashSet<int>();
 
             PriorityQueue<(int, int)> priorityQueue = new PriorityQueue<(int, int)>();
@@ -67,9 +59,7 @@ namespace L5_t_p
 
                 if (currentVertex == endVertex)
                 {
-                    List<int> path = GetShortestPath(previousVertices, startVertex, endVertex);
-                    //Console.WriteLine($"Shortest distance from vertex {startVertex} to vertex {endVertex}: {dist}");
-                    //Console.WriteLine("Path:");
+                    List<int> path = GetShortestPath(preVertices, startVertex, endVertex);
                     int previous = -1;
                     int fullweight = 0;
                     foreach (int vertex in path)
@@ -94,7 +84,7 @@ namespace L5_t_p
                         if (!distances.ContainsKey(neighbor) || newDistance < distances[neighbor])
                         {
                             distances[neighbor] = newDistance;
-                            previousVertices[neighbor] = currentVertex;
+                            preVertices[neighbor] = currentVertex;
                             priorityQueue.Enqueue((newDistance, neighbor));
                         }
                     }
@@ -104,14 +94,14 @@ namespace L5_t_p
             return res;
         }
 
-        private List<int> GetShortestPath(Dictionary<int, int> previousVertices, int startVertex, int endVertex)
+        private List<int> GetShortestPath(Dictionary<int, int> preVertices, int startVertex, int endVertex)
         {
             List<int> path = new List<int>();
             int currentVertex = endVertex;
             while (currentVertex != startVertex)
             {
                 path.Add(currentVertex);
-                currentVertex = previousVertices[currentVertex];
+                currentVertex = preVertices[currentVertex];
             }
             path.Add(startVertex);
             path.Reverse();
