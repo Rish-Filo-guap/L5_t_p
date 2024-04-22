@@ -1,8 +1,4 @@
-using System.Collections;
 using System.Text;
-using System.Drawing;
-using System.Windows.Forms;
-using static System.Collections.Specialized.BitVector32;
 using System.Drawing.Drawing2D;
 
 namespace L5_t_p
@@ -13,7 +9,9 @@ namespace L5_t_p
         List<string> allWaysWeight = new List<string>(); //массив всех весов между станциями
         SearchGraph graph; //объект класса поиск по графу
         Graphics map; //карта метро
-        BufferedGraphics buffered; //буфер для карты
+
+        //буфер для карты
+        BufferedGraphics buffered;
         BufferedGraphicsContext currentContext;
 
         bool stationSelected = false; //какая станция выбрана
@@ -21,7 +19,6 @@ namespace L5_t_p
         int xscale;//масштабирование по х
         int startStationId; //страртовая станция
         int endStationId;//конечная станция
-        bool isWayDrawed = false; //нарисован ли путь между станциями
         public Form1()
         {
 
@@ -188,7 +185,7 @@ namespace L5_t_p
 
         }
         private int GetXFromCoord(int x) {//расчет х координаты для рисования фигур
-            return x * xscale + -5;
+            return x * xscale + - 5;
         }
         private int GetYFromCoord(int y) {//расчет у координаты для рисовани фигур
             return (y + 5) * yscale - 5 + yscale;
@@ -198,7 +195,7 @@ namespace L5_t_p
             {
                 Point pre;
                 Pen pn;
-                listBox2.Items.Clear();
+                listBox2.Items.Clear();//очистить списиок пройденных станций
                 var list = graph.Dijkstra(startStationId, endStationId);//расчитать список станций на пути
                 pn = new Pen(stations[list[0][0]].color, 3);
                 
@@ -211,7 +208,6 @@ namespace L5_t_p
                     for (int i = 0; i < list.Count - 1; i++)
                     {
                         pn.Color = stations[list[i][1]].color;
-                        Thread.Sleep(150);
                         if (new Point(GetXFromCoord(stations[list[i][1]].x) - 15, GetYFromCoord(stations[list[i][1]].y))==pre)
                             map.DrawEllipse(pn, GetXFromCoord(stations[list[i][1]].x) - 18, GetYFromCoord(stations[list[i][1]].y) - 18, 36, 36);//выделить станцию на пути при переходе
                         else 
@@ -219,10 +215,12 @@ namespace L5_t_p
                         listBox2.Items.Add(list[i][2]);//вывести дистанцию между станциями
                         listBox2.Items.Add(stations[list[i][1]].name);//вывести имя станции
                         pre = new Point(GetXFromCoord(stations[list[i][1]].x) - 15, GetYFromCoord(stations[list[i][1]].y));
+                        Thread.Sleep(150);
                     }
                 }
                 WaylenthLabel.Text = (list[list.Count - 1][0]).ToString();//вывести длину всего пути
-                isWayDrawed = true;
+                
+                
             }
            
         }
@@ -234,10 +232,6 @@ namespace L5_t_p
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (isWayDrawed)
-            {
-                isWayDrawed = false;
-            }
             double distanse = 20;//максимальное расстояние от точки клика до станции
             int nearId = -1;//выбранная станция
             Pen pn = new Pen(Color.Purple, 3);
@@ -260,11 +254,9 @@ namespace L5_t_p
                 
                 if (stationSelected)//выбрана станция конца
                 {
-                    EndStation.Text = stations[nearId].name;
-                    //stationSelected = false;
                     endStationId = nearId;
-                    map.DrawEllipse(pn, GetXFromCoord(stations[nearId].x)-15, GetYFromCoord(stations[nearId].y)-15, 30, 30);
-                    
+                    map.DrawEllipse(pn, GetXFromCoord(stations[nearId].x) - 15, GetYFromCoord(stations[nearId].y) - 15, 30, 30);// выделить выбранную станцию
+                    EndStation.Text = stations[nearId].name;//вывести имя конечной станции
                     FindWay();//нарисовать маршрут
                 }
                 else//выбрана станция начала

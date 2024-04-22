@@ -46,7 +46,7 @@
             ClientSize = new Size(410, 556);
             Controls.Add(listBox1);
             Name = "Form2";
-            Text = "Form2";
+            Text = "Список всех станций";
             ResumeLayout(false);
         }
 

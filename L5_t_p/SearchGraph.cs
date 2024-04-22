@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace L5_t_p
+﻿namespace L5_t_p
 {
 
 
@@ -35,57 +29,59 @@ namespace L5_t_p
 
         }
 
-        public List<int[]> Dijkstra(int startVertex, int endVertex)
+        public List<int[]> Dijkstra(int startVertex, int endVertex)//обход всех вершин от начальной до конечной
         {
-            Dictionary<int, int> distances = new Dictionary<int, int>();
-            Dictionary<int, int> preVertices = new Dictionary<int, int>();
-            HashSet<int> visited = new HashSet<int>();
+            Dictionary<int, int> distances = new Dictionary<int, int>();//длины путей
+            Dictionary<int, int> preVertices = new Dictionary<int, int>();//предыдущие вершины
+            List<int> visited = new List<int>();//посещенные вершины
+            List<int[]> res = new List<int[]>();//маршрут
 
             PriorityQueue<(int, int)> priorityQueue = new PriorityQueue<(int, int)>();
             priorityQueue.Enqueue((0, startVertex));
             distances[startVertex] = 0;
-            List<int[]> res = new List<int[]>();
 
-            while (priorityQueue.Count > 0)
+            while (priorityQueue.Count > 0)//пока очередь не пуста
             {
-                (int dist, int currentVertex) = priorityQueue.Dequeue();
+                (int dist, int currentVertex) = priorityQueue.Dequeue();//извлечь вершину с наименьшем расстоянием
 
-                if (visited.Contains(currentVertex))
+                if (visited.Contains(currentVertex))//если вершина посещена идем к следующей
                 {
                     continue;
                 }
 
-                visited.Add(currentVertex);
+                visited.Add(currentVertex);//добавить текущую вершину как посещенную
 
-                if (currentVertex == endVertex)
+                if (currentVertex == endVertex)// при достижении конечной точки пути
                 {
-                    List<int> path = GetShortestPath(preVertices, startVertex, endVertex);
-                    int previous = -1;
-                    int fullweight = 0;
-                    foreach (int vertex in path)
+                    List<int> way = GetShortestWay(preVertices, startVertex, endVertex);//формируем путь
+                    int previous = -1;//предыдущая станция
+                    int fullweight = 0;//полная стоимость маршрута
+                    foreach (int vertex in way)
                     {
                         if (previous != -1)
                         {
-                            int weight = adjacencyList[previous].Find(x => x.Item1 == vertex).Item2;
-                            res.Add([ previous, vertex, weight]);
-                            fullweight += weight;
+                            int weight = adjacencyList[previous].Find(x => x.Item1 == vertex).Item2;//находим вес между двумя станциями
+                            res.Add([ previous, vertex, weight]);//добавляем две станции и стоимость между ними
+                            fullweight += weight;//прибавить путь между станциями к полному пути
                         }
-                        previous = vertex;
+                        previous = vertex;//изменить предыдущую станцию
                     }
-                    res.Add([fullweight]);
+                    
+                    
+                    res.Add([fullweight]);//добавить к маршруту информацию о стоимости полного пути
                     return res;
                 }
 
-                if (adjacencyList.ContainsKey(currentVertex))
+                if (adjacencyList.ContainsKey(currentVertex))//обновление расстояний между вершинами
                 {
                     foreach ((int neighbor, int weight) in adjacencyList[currentVertex])
                     {
-                        int newDistance = dist + weight;
-                        if (!distances.ContainsKey(neighbor) || newDistance < distances[neighbor])
+                        int newDistance = dist + weight;//новая дистанция с учетом добавленной станции
+                        if (!distances.ContainsKey(neighbor) || newDistance < distances[neighbor])//если новая дистанция короче или такого пути не было
                         {
-                            distances[neighbor] = newDistance;
-                            preVertices[neighbor] = currentVertex;
-                            priorityQueue.Enqueue((newDistance, neighbor));
+                            distances[neighbor] = newDistance;//записать дистанцию
+                            preVertices[neighbor] = currentVertex;//записывается пройденная вершина
+                            priorityQueue.Enqueue((newDistance, neighbor));//вершина добавляется в очередь
                         }
                     }
                 }
@@ -93,23 +89,24 @@ namespace L5_t_p
 
             return res;
         }
-
-        private List<int> GetShortestPath(Dictionary<int, int> preVertices, int startVertex, int endVertex)
+       
+        private List<int> GetShortestWay(Dictionary<int, int> preVertices, int startVertex, int endVertex)//формируем путь между станциями
         {
-            List<int> path = new List<int>();
+            List<int> way = new List<int>();
             int currentVertex = endVertex;
-            while (currentVertex != startVertex)
+            while (currentVertex != startVertex)//пока не дойдем до начала маршрута
             {
-                path.Add(currentVertex);
-                currentVertex = preVertices[currentVertex];
+                way.Add(currentVertex);//добавить вершину в список
+                currentVertex = preVertices[currentVertex];//получить следущую вершину
             }
-            path.Add(startVertex);
-            path.Reverse();
-            return path;
+            way.Add(startVertex);//добавить начальную вершину
+            way.Reverse();//развернуть список
+            return way;
         }
+        
     }
 
-    class PriorityQueue<T>
+    class PriorityQueue<T>//приоритетная очередь
     {
         private SortedDictionary<T, int> elements = new SortedDictionary<T, int>();
 
