@@ -83,7 +83,6 @@ namespace L5_t_p
                 
 
             }
-            buffered.Render();//генерация в буфере
             buffered.Render(map);//вывод на экран
         }
 
