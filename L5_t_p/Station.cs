@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace L5_t_p
+﻿namespace L5_t_p
 {
-    public class Station
+    public class Station //класс для хранения информации о станции
     {
-        static int idCounter = 0; 
-        public int id;
-        public string name;
-        public int x;
-        public int y;
-        public Color color;
-        private static int GetId() { 
+        static int idCounter = 0; //счетчик индексов
+        public int id;//индекс станции
+        public string name;//название 
+        public int x;//х координата
+        public int y;//н координата
+        public Color color;//цвет линии
+        private static int GetId() { //расчет индекса
         return idCounter++;
         }
         public Station(string name,int x, int y, Color color)
@@ -26,7 +20,5 @@ namespace L5_t_p
             this.color = color;
         }
     }
-    public class Traveltime { 
-        public int a;
-    }
+
 }
